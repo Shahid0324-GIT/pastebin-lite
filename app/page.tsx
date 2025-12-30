@@ -4,28 +4,33 @@ import { CreatePasteBody } from "@/lib";
 import { useState } from "react";
 
 export default function Home() {
-  const [content, setContent] = useState("");
-  const [ttlSeconds, setTtlSeconds] = useState("");
-  const [maxViews, setMaxViews] = useState("");
-  const [pasteUrl, setPasteUrl] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [formState, setFormState] = useState({
+    content: "",
+    ttlSeconds: "",
+    maxViews: "",
+    pasteUrl: "",
+    error: "",
+    loading: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setPasteUrl("");
-    setLoading(true);
+    setFormState((prev) => ({
+      ...prev,
+      error: "",
+      pasteUrl: "",
+      loading: true,
+    }));
 
     try {
-      const body: CreatePasteBody = { content };
+      const body: CreatePasteBody = { content: formState.content };
 
-      if (ttlSeconds) {
-        body.ttl_seconds = parseInt(ttlSeconds, 10);
+      if (formState.ttlSeconds) {
+        body.ttl_seconds = parseInt(formState.ttlSeconds, 10);
       }
 
-      if (maxViews) {
-        body.max_views = parseInt(maxViews, 10);
+      if (formState.maxViews) {
+        body.max_views = parseInt(formState.maxViews, 10);
       }
 
       const response = await fetch("/api/pastes", {
@@ -37,21 +42,26 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Failed to create paste");
+        setFormState((prev) => ({
+          ...prev,
+          error: data.error || "Failed to create paste",
+          loading: false,
+        }));
         return;
       }
 
-      setPasteUrl(data.url);
-      // Reset form
-      setContent("");
-      setTtlSeconds("");
-      setMaxViews("");
+      setFormState((prev) => ({
+        ...prev,
+        pasteUrl: data.url,
+        content: "",
+        ttlSeconds: "",
+        maxViews: "",
+        loading: false,
+      }));
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Network error. Please try again.";
-      setError(msg);
-    } finally {
-      setLoading(false);
+      setFormState((prev) => ({ ...prev, error: msg, loading: false }));
     }
   };
 
@@ -73,8 +83,10 @@ export default function Home() {
               </label>
               <textarea
                 id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+                value={formState.content}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, content: e.target.value }))
+                }
                 className="w-full h-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                 placeholder="Paste your text here..."
                 required
@@ -93,8 +105,13 @@ export default function Home() {
                   id="ttl"
                   type="number"
                   min="1"
-                  value={ttlSeconds}
-                  onChange={(e) => setTtlSeconds(e.target.value)}
+                  value={formState.ttlSeconds}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      ttlSeconds: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Optional (e.g., 3600)"
                 />
@@ -111,8 +128,13 @@ export default function Home() {
                   id="maxViews"
                   type="number"
                   min="1"
-                  value={maxViews}
-                  onChange={(e) => setMaxViews(e.target.value)}
+                  value={formState.maxViews}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      maxViews: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Optional (e.g., 10)"
                 />
@@ -121,31 +143,31 @@ export default function Home() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={formState.loading}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400"
             >
-              {loading ? "Creating..." : "Create Paste"}
+              {formState.loading ? "Creating..." : "Create Paste"}
             </button>
           </form>
 
-          {error && (
+          {formState.error && (
             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
+              {formState.error}
             </div>
           )}
 
-          {pasteUrl && (
+          {formState.pasteUrl && (
             <div className="mt-4 p-4 bg-green-100 border border-green-400 rounded">
               <p className="text-green-800 font-medium mb-2">
                 Paste created successfully!
               </p>
               <a
-                href={pasteUrl}
+                href={formState.pasteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline break-all"
               >
-                {pasteUrl}
+                {formState.pasteUrl}
               </a>
             </div>
           )}
