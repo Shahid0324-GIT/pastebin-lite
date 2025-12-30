@@ -1,6 +1,6 @@
 # Pastebin Lite
 
-A simple pastebin application built with Next.js 15 and Redis, allowing users to create and share text pastes with optional expiry and view limits.
+A simple pastebin application built with Next.js 16 and Redis, allowing users to create and share text pastes with optional expiry and view limits.
 
 ## Features
 
@@ -12,7 +12,7 @@ A simple pastebin application built with Next.js 15 and Redis, allowing users to
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Persistence**: Redis (Upstash)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
@@ -20,7 +20,7 @@ A simple pastebin application built with Next.js 15 and Redis, allowing users to
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - Redis instance (Upstash recommended for deployment)
 
 ## Setup Instructions
