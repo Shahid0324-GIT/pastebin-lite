@@ -67,6 +67,8 @@ export async function POST(request: NextRequest) {
 
     if (body.ttl_seconds) {
       await redis.expire(key, body.ttl_seconds + 60);
+    } else {
+      await redis.expire(key, 1800);
     }
 
     const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
